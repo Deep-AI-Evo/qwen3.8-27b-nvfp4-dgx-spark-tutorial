@@ -132,25 +132,25 @@ Then call the OpenAI-compatible API at `http://127.0.0.1:8000`.
 
 **Single-stream decode (tok/s)**
 
-| Context | DGX Spark NVFP4 (this repo) | PRO 5000 FP8 (no MTP) | PRO 5000 Q6_K | PRO 6000 NVFP4+MTP | PRO 6000 NVFP4 no MTP | PRO 6000 Q6_K |
-|---|---|---|---|---|---|---|
-| Short (~1-3K) | ~21 | 37.3 | 39.7 | 100.2 | 58.6 | 55.4 |
-| ~200K | 14.2 | 26.4 | 39.9 | 18.2 | **43.7** | 35.7 |
+| Context | DGX Spark NVFP4 (this repo) | PRO 5000 FP8 (no MTP) | PRO 5000 Q6_K | **PRO 6000 FP8+MTP** | **PRO 6000 FP8 no MTP** | PRO 6000 NVFP4+MTP | PRO 6000 NVFP4 no MTP | PRO 6000 Q6_K |
+|---|---|---|---|---|---|---|---|---|
+| Short (~1-3K) | ~21 | 37.3 | 39.7 | 95.6 | 52.6 | 100.2 | 58.6 | 55.4 |
+| ~200K | 14.2 | 26.4 | 39.9 | 19.1 | 39.6 | 18.2 | **43.7** | 35.7 |
 
 **Single-stream prefill ~200K (tok/s) / TTFT (s)**
 
-| DGX Spark NVFP4 (this repo) | PRO 5000 FP8 | PRO 5000 Q6_K | PRO 6000 NVFP4+MTP | PRO 6000 Q6_K |
-|---|---|---|---|---|
-| 840 / 244s | 2,114 / 110s | 768 / 302s | **4,447 / 39.9s** | 1,676 / 105.9s |
+| DGX Spark NVFP4 (this repo) | PRO 5000 FP8 | PRO 5000 Q6_K | **PRO 6000 FP8+MTP** | PRO 6000 NVFP4+MTP | PRO 6000 Q6_K |
+|---|---|---|---|---|---|
+| 840 / 244s | 2,114 / 110s | 768 / 302s | 3,869 / 45.8s | **4,447 / 39.9s** | 1,676 / 105.9s |
 
 **Concurrent decode aggregate throughput (tok/s)**
 
-| Concurrency | DGX Spark NVFP4 (this repo) | PRO 5000 FP8 | PRO 6000 NVFP4+MTP | PRO 6000 Q6_K (4 slots) |
-|---|---|---|---|---|
-| 1 | 20.0 | 37.3 | 95.0 | 49.6 |
-| 2 | 22.7 | 64.7 | 151.3 | 92.8 |
-| 4 | 44.0 | — | 346.5 | 158.5 |
-| 8 | 77.7 | — | **654.1** | — |
+| Concurrency | DGX Spark NVFP4 (this repo) | PRO 5000 FP8 | **PRO 6000 FP8+MTP** | PRO 6000 NVFP4+MTP | PRO 6000 Q6_K (4 slots) |
+|---|---|---|---|---|---|
+| 1 | 20.0 | 37.3 | 78.8 | 95.0 | 49.6 |
+| 2 | 22.7 | 64.7 | 137.0 | 151.3 | 92.8 |
+| 4 | 44.0 | — | 299.3 | 346.5 | 158.5 |
+| 8 | 77.7 | — | 556.2 | **654.1** | — |
 
 TL;DR: **the PRO 6000 leads prefill/TTFT/concurrency across the board (~4-8x DGX Spark);
 for 200K long-context decode, turn MTP OFF — PRO 6000 NVFP4 no-MTP at 43.7 tok/s is the best of all three devices.**
