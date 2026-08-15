@@ -1,0 +1,42 @@
+
+===== 测试1: 思考模式-数学推理 (耗时 29.1s) =====
+[回复] We need answer in Chinese. User asks simple math: pool with pipes A fills 6 hours, B fills 4 hours. Both open how long? Need reasoning. done. Final concise but with reasoning. Compute rates: 1/6 + 1/4 = 5/12 pool/hour. Time = 1/(5/12)=12/5=2.4 hours = 2 hours 24 minutes. Ensure mention assumptions no outflow, constant rates.
+</think>
+
+设水池总量为 1。
+
+- 甲管单独注满需 6 小时，所以甲每小时注水量为 \( \frac{1}{6} \)。
+- 乙管单独注满需 4 小时，所以乙每小时注水量为 \( \frac{1}{4} \)。
+
+两管同时开时，每小时注水量为：
+
+\[
+\frac{1}{6}+\frac{1}{4}
+= \frac{2}{12}+\frac{3}{12}
+= \frac{5}{12}
+\]
+
+也就是每小时能注满水池的 \( \frac{5}{12} \)。
+
+因此注满水池所需时间为：
+
+\[
+1 \div \frac{5}{12}
+[用量] {'prompt_tokens': 91, 'total_tokens': 433, 'completion_tokens': 342, 'prompt_tokens_details': None}
+
+===== 测试2: 非思考模式-常识问答 (耗时 4.6s) =====
+[回复] Transformer 架构是一种基于自注意力机制（Self-Attention）的深度学习模型，它通过并行处理序列数据中的全局依赖关系，取代了传统的循环或卷积结构，从而极大地提升了处理长序列任务（如自然语言处理）的效率与性能。
+[用量] {'prompt_tokens': 20, 'total_tokens': 74, 'completion_tokens': 54, 'prompt_tokens_details': None}
+
+===== 测试3: 代码生成 (耗时 126.7s) =====
+[回复] User wants a thread-safe LRU cache in Python with capacity limit, complete code. Respond in Chinese. Need provide complete code. Should include using OrderedDict and threading.RLock. Include get/put, maybe remove, clear, stats, context manager? Ensure thread safety. Also discuss complexity O(1). Could include demo and test. Need be complete. Need final only. Let's craft concise but thorough. Potential issues: Python GIL but still lock needed for compound operations. OrderedDict move_to_end under lock. Use RLock to allow reentrant calls e.g. custom hook? But simple Lock ok. Use RLock to be safe
+[用量] {'prompt_tokens': 72, 'total_tokens': 1572, 'completion_tokens': 1500, 'prompt_tokens_details': None}
+
+===== 测试4: 多轮对话记忆 (耗时 1.2s) =====
+[回复] 你叫**小明**，你的爱好是**爬山**。
+[用量] {'prompt_tokens': 167, 'total_tokens': 180, 'completion_tokens': 13, 'prompt_tokens_details': None}
+
+===== 测试5: 流式输出 =====
+TTFT=0.18s, 总耗时=2.2s
+
+全部对话测试完成
