@@ -16,11 +16,42 @@
 
 </div>
 
-> 📊 **三设备横向对比请看这里**：[Qwen3.8-27B 跨设备横向对比（DGX Spark / RTX PRO 5000 / RTX PRO 6000）](https://github.com/Deep-AI-Evo/qwen3.8-27b-fp8-nvfp4-rtx-pro6000-serving-benchmark/blob/main/docs/Qwen3.8-27B-跨设备横向对比.md)
+---
+
+## 📑 目录
+
+- [这个仓库解决什么问题](#intro)
+- [实测数据速览（单机）](#single)
+- [双机部署结论（2× DGX Spark）](#dual)
+- [快速开始](#quickstart)
+- [把本仓库交给代码智能体（省 Token）](#agent)
+- [日常使用建议](#daily)
+- [跨设备横向对比：DGX Spark / RTX PRO 5000 / PRO 6000](#compare) ⭐
+- [完整文档与仓库结构](#docs)
+- [相关仓库与作者](#links)
 
 ---
 
-## 📊 实测数据速览
+<a id="intro"></a>
+
+## 🎯 这个仓库解决什么问题
+
+Qwen3.8-27B-NVFP4 是 2026-08 新发布的 27B 视觉-语言模型（256K 原生上下文）。
+本仓库回答三个问题：
+
+1. **怎么装** —— DGX Spark（aarch64/GB10）上纯 pip 部署，无需 root、无需 Docker，含全部踩坑解法
+2. **跑多快** —— 完整的 decode/prefill/并发/长上下文实测数据（含 256K 顶格大海捞针验证）
+3. **值不值** —— 双机有没有意义？和 RTX PRO 5000 / PRO 6000 比是什么水平？
+
+> ⭐ **如果你只关心"这机器什么水平"**：直接跳到文末的
+> [跨设备横向对比](#compare)——DGX Spark vs RTX PRO 5000 vs RTX PRO 6000，
+> 但建议先快速浏览单机和双机数据，对比时才看得懂差距来自哪里。
+
+---
+
+<a id="single"></a>
+
+## 📊 实测数据速览（单机）
 
 > 测试环境：DGX Spark（GB10，128GB 统一内存）· vLLM 0.27.1 · torch 2.13.0+cu130 · 256K 上下文 · MTP ×3 已开启
 
@@ -58,6 +89,8 @@
 
 ---
 
+<a id="dual"></a>
+
 ## 🖥🖥 双机部署结论（2× DGX Spark TP=2）
 
 > 完整数据与部署方式：[双机部署实测](docs/Qwen3.8-27B-双机部署实测.md)（vLLM 原生 mp 多机模式 + MTP×3）
@@ -74,6 +107,29 @@
 日常单人交互用单机；多 agent 并发、长文档多会话再上双机。
 
 ---
+
+<a id="quickstart"></a>
+
+## 🚀 快速开始
+
+环境就绪后一条命令启动（完整步骤见 [部署教程](docs/Qwen3.8-27B-NVFP4-部署教程.md)）：
+
+```bash
+PATH=~/projects/qwen38-env/bin:$PATH \
+~/projects/qwen38-env/bin/vllm serve ~/projects/models/Qwen3.8-27B-NVFP4 \
+  --served-model-name unsloth/Qwen3.8-27B-NVFP4 \
+  --reasoning-parser qwen3 \
+  --max-model-len 262144 \
+  --gpu-memory-utilization 0.85 \
+  --speculative-config '{"method":"mtp","num_speculative_tokens":3}' \
+  --port 8000
+```
+
+服务就绪后访问 `http://127.0.0.1:8000`（OpenAI 兼容 API）。
+
+---
+
+<a id="agent"></a>
 
 ## 🤖 把本仓库交给代码智能体，一键复现部署（省 Token）
 
@@ -95,30 +151,18 @@ Agent 会按教程直接命中正确版本与命令，跳过全部试错环节�
 
 ---
 
-## 🚀 一键启动命令（环境就绪后）
+<a id="daily"></a>
 
-```bash
-PATH=~/projects/qwen38-env/bin:$PATH \
-~/projects/qwen38-env/bin/vllm serve ~/projects/models/Qwen3.8-27B-NVFP4 \
-  --served-model-name unsloth/Qwen3.8-27B-NVFP4 \
-  --reasoning-parser qwen3 \
-  --max-model-len 262144 \
-  --gpu-memory-utilization 0.85 \
-  --speculative-config '{"method":"mtp","num_speculative_tokens":3}' \
-  --port 8000
-```
+## 💡 日常使用建议
 
-服务就绪后访问 `http://127.0.0.1:8000`（OpenAI 兼容 API）。
+- **并发**：交互场景 ≤4 路（单流 ≥15 tok/s）；8 路是交互上限；批量任务用 16+ 吃满吞吐
+- **长上下文**：100K 以内随意用（灌入约 1.4 分钟）；200K 级适合"一次灌入 + 多轮问答"
+- **注意**：该混合架构暂不支持前缀缓存，避免在新会话反复重灌同一长文档
+- **模式**：复杂推理/代码开思考模式；闲聊/翻译/摘要关思考（`enable_thinking=false`）更快
 
 ---
 
-## 📚 完整文档
-
-| 文档 | 内容 |
-|---|---|
-| 📖 [部署教程](docs/Qwen3.8-27B-NVFP4-部署教程.md) | 环境准备、镜像下载、启动参数详解、API 调用示例、5 个踩坑实录 |
-| 📈 [测试报告](docs/Qwen3.8-27B-NVFP4-测试报告.md) | 7 项功能测试、并发/长上下文压测、MTP 优化对比、日常使用建议 |
-| 🖥🖥 [双机部署实测](docs/Qwen3.8-27B-双机部署实测.md) | 2× DGX Spark TP=2：并发/容量收益、mp 模式与 Ray 的坑、prefill/解码对比 |
+<a id="compare"></a>
 
 ## 🆚 跨设备横向对比（DGX Spark / RTX PRO 5000 / RTX PRO 6000）
 
@@ -147,23 +191,25 @@ PATH=~/projects/qwen38-env/bin:$PATH \
 | 4 | 44.0 | — | 299.3 | 346.5 | 158.5 |
 | 8 | 77.7 | — | 556.2 | **654.1** | — |
 
-一句话：**PRO 6000 在 prefill/TTFT/并发上全面领先（对 DGX Spark 约 4~8 倍）；
-200K 超长上下文 decode 的正确姿势是关 MTP——PRO 6000 NVFP4 无 MTP 43.7 t/s 为三设备全场最高。**
-DGX Spark 的价值在于 128GB 统一内存下的极低功耗与部署简单，而非绝对速度。
+**怎么读这张表**：
 
-## 🔗 相关仓库
+- **要 raw 速度**：PRO 6000 在 prefill/TTFT/并发上全面领先（对 DGX Spark 约 4~8 倍），其中
+  FP8 无 MTP 是最省心的强基线（52.6 t/s 起步，200K 仍有 39.6 t/s）
+- **200K 超长上下文 decode 的正确姿势是关 MTP**——PRO 6000 NVFP4 无 MTP 43.7 t/s 为三设备全场最高
+- **DGX Spark 的价值不在绝对速度**：128GB 统一内存跑满 256K 上下文、安静低功耗的桌面形态、
+  以及双机扩展的灵活性（见[双机结论](#dual)）
 
-- [RTX PRO 6000 FP8 vs NVFP4 benchmark](https://github.com/Deep-AI-Evo/qwen3.8-27b-fp8-nvfp4-rtx-pro6000-serving-benchmark) — 含 [DGX Spark / PRO 5000 / PRO 6000 三设备横向对比](https://github.com/Deep-AI-Evo/qwen3.8-27b-fp8-nvfp4-rtx-pro6000-serving-benchmark/blob/main/docs/Qwen3.8-27B-跨设备横向对比.md)
-- [RTX PRO 5000 llama.cpp Q6_K vs vLLM FP8](https://github.com/Deep-AI-Evo/qwen3.8-27b-q6k-fp8-rtx-pro5000-serving-benchmark)
+---
 
-## 💡 日常使用建议
+<a id="docs"></a>
 
-- **并发**：交互场景 ≤4 路（单流 ≥15 tok/s）；8 路是交互上限；批量任务用 16+ 吃满吞吐
-- **长上下文**：100K 以内随意用（灌入约 1.4 分钟）；200K 级适合"一次灌入 + 多轮问答"
-- **注意**：该混合架构暂不支持前缀缓存，避免在新会话反复重灌同一长文档
-- **模式**：复杂推理/代码开思考模式；闲聊/翻译/摘要关思考（`enable_thinking=false`）更快
+## 📚 完整文档与仓库结构
 
-## 🗂 仓库结构
+| 文档 | 内容 |
+|---|---|
+| 📖 [部署教程](docs/Qwen3.8-27B-NVFP4-部署教程.md) | 环境准备、镜像下载、启动参数详解、API 调用示例、5 个踩坑实录 |
+| 📈 [测试报告](docs/Qwen3.8-27B-NVFP4-测试报告.md) | 7 项功能测试、并发/长上下文压测、MTP 优化对比、日常使用建议 |
+| 🖥🖥 [双机部署实测](docs/Qwen3.8-27B-双机部署实测.md) | 2× DGX Spark TP=2：并发/容量收益、mp 模式与 Ray 的坑、prefill/解码对比 |
 
 ```
 ├── README.md / README.en.md      # 中文 / English
@@ -172,6 +218,17 @@ DGX Spark 的价值在于 128GB 统一内存下的极低功耗与部署简单，
 ├── tests/                        # 功能测试脚本（对话/视觉，仅标准库）+ 压测矩阵
 └── results/                      # 全部原始压测输出
 ```
+
+---
+
+<a id="links"></a>
+
+## 🔗 相关仓库
+
+- [RTX PRO 6000 FP8 vs NVFP4 benchmark](https://github.com/Deep-AI-Evo/qwen3.8-27b-fp8-nvfp4-rtx-pro6000-serving-benchmark) — 含 [DGX Spark / PRO 5000 / PRO 6000 三设备横向对比](https://github.com/Deep-AI-Evo/qwen3.8-27b-fp8-nvfp4-rtx-pro6000-serving-benchmark/blob/main/docs/Qwen3.8-27B-跨设备横向对比.md)
+- [RTX PRO 5000 llama.cpp Q6_K vs vLLM FP8](https://github.com/Deep-AI-Evo/qwen3.8-27b-q6k-fp8-rtx-pro5000-serving-benchmark)
+- [DeepSeek-V4-Flash 双机部署实录](https://github.com/Deep-AI-Evo/deepseek-v4-flash-2x-dgx-spark)
+- [DGX Spark 集群监控面板](https://github.com/Deep-AI-Evo/dgx-spark-cluster-monitor)
 
 ---
 
