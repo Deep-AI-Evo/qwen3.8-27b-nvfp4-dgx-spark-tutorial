@@ -118,6 +118,37 @@ PATH=~/projects/qwen38-env/bin:$PATH \
 | 📈 [测试报告](docs/Qwen3.8-27B-NVFP4-测试报告.md) | 7 项功能测试、并发/长上下文压测、MTP 优化对比、日常使用建议 |
 | 🖥🖥 [双机部署实测](docs/Qwen3.8-27B-双机部署实测.md) | 2× DGX Spark TP=2：并发/容量收益、mp 模式与 Ray 的坑、prefill/解码对比 |
 
+## 🆚 跨设备横向对比（DGX Spark / RTX PRO 5000 / RTX PRO 6000）
+
+> 摘要自 [三设备横向对比](https://github.com/Deep-AI-Evo/qwen3.8-27b-fp8-nvfp4-rtx-pro6000-serving-benchmark/blob/main/docs/Qwen3.8-27B-跨设备横向对比.md)（完整档位与测试方法见该文档）。
+> ⚠️ 口径差异：三台设备 vLLM 版本 / MTP 设置 / 操作系统不完全相同，数量级参考意义大于精确对比。
+
+**单并发 decode（tok/s）**
+
+| 上下文 | DGX Spark NVFP4（本仓库） | PRO 5000 FP8（无 MTP） | PRO 5000 Q6_K | PRO 6000 NVFP4+MTP | PRO 6000 NVFP4 无 MTP | PRO 6000 Q6_K |
+|---|---|---|---|---|---|---|
+| 短（~1-3K） | ~21 | 37.3 | 39.7 | 100.2 | 58.6 | 55.4 |
+| ~200K | 14.2 | 26.4 | 39.9 | 18.2 | **43.7** | 35.7 |
+
+**单并发 prefill ~200K（tok/s）/ TTFT（s）**
+
+| DGX Spark NVFP4（本仓库） | PRO 5000 FP8 | PRO 5000 Q6_K | PRO 6000 NVFP4+MTP | PRO 6000 Q6_K |
+|---|---|---|---|---|
+| 840 / 244s | 2,114 / 110s | 768 / 302s | **4,447 / 39.9s** | 1,676 / 105.9s |
+
+**并发 decode 聚合吞吐（tok/s）**
+
+| 并发 | DGX Spark NVFP4（本仓库） | PRO 5000 FP8 | PRO 6000 NVFP4+MTP | PRO 6000 Q6_K（4 槽） |
+|---|---|---|---|---|
+| 1 | 20.0 | 37.3 | 95.0 | 49.6 |
+| 2 | 22.7 | 64.7 | 151.3 | 92.8 |
+| 4 | 44.0 | — | 346.5 | 158.5 |
+| 8 | 77.7 | — | **654.1** | — |
+
+一句话：**PRO 6000 在 prefill/TTFT/并发上全面领先（对 DGX Spark 约 4~8 倍）；
+200K 超长上下文 decode 的正确姿势是关 MTP——PRO 6000 NVFP4 无 MTP 43.7 t/s 为三设备全场最高。**
+DGX Spark 的价值在于 128GB 统一内存下的极低功耗与部署简单，而非绝对速度。
+
 ## 🔗 相关仓库
 
 - [RTX PRO 6000 FP8 vs NVFP4 benchmark](https://github.com/Deep-AI-Evo/qwen3.8-27b-fp8-nvfp4-rtx-pro6000-serving-benchmark) — 含 [DGX Spark / PRO 5000 / PRO 6000 三设备横向对比](https://github.com/Deep-AI-Evo/qwen3.8-27b-fp8-nvfp4-rtx-pro6000-serving-benchmark/blob/main/docs/Qwen3.8-27B-跨设备横向对比.md)
