@@ -47,6 +47,9 @@
 | 1K | ≈1800 tok/s | 0.57 s | ≈21 tok/s |
 | 100K | ≈1230 tok/s (-32%) | 83 s | ≈16.6 tok/s |
 | 200K | ≈840 tok/s (-53%) | 244 s | ≈14.2 tok/s |
+| **256K (maxed, 261K tokens)** | ≈715 tok/s (-60%) | 366 s | ≈11.4 tok/s |
+
+> 🎯 **256K context verified for real**: in a needle-in-a-haystack test (255,376 tokens, needle at 70% depth) the model recalled the hidden passcode on the first try.
 
 > 💡 Why decode decays gently: 48 of the 64 layers are Gated DeltaNet linear attention, whose
 > decode cost is independent of context length; only 16 full-attention layers grow with it.

@@ -28,6 +28,7 @@ Engine self-report (256k config): **KV cache 2,091,194 tokens, ~8 concurrent req
 | 5 | Streaming | ✅ OK | Short-prompt TTFT 0.18s |
 | 6 | Vision understanding | ✅ Pass | Accurate scene description (dark-blue background, red circle upper-left, green rectangle center-right, yellow stripes bottom); stripe count 8→6 minor miss |
 | 7 | Reasoning separation | ✅ OK | With `--reasoning-parser qwen3`, chain lands in the `reasoning` field; "strawberry r count" answered correctly (3) |
+| 8 | 256K needle-in-a-haystack | ✅ Hit | Passcode "8517-3342-9906" hidden at ~70% depth inside 255,376 tokens of filler logs; model answered directly; prefill 352s |
 
 ## 3. Performance (vllm bench serve, random dataset)
 
@@ -65,13 +66,15 @@ Note: random-token prompts yield lower MTP acceptance (37–59%) than real text;
 | 8k | 4.2 s | ≈1900 tok/s | 99.9 ms (no MTP) | — |
 | 100k | 83.0 s | **≈1230 tok/s** (-32%) | 60.1 ms (+30%) | **≈16.6 tok/s** |
 | 200k | 244.1 s | **≈840 tok/s** (-53%) | 70.3 ms (+52%) | **≈14.2 tok/s** |
+| **256k (maxed, 261,000 tokens)** | 365.9 s | **≈715 tok/s** (-60%) | 87.5 ms (+88%) | **≈11.4 tok/s** |
 
 \* The 1k random-data run had unusually low MTP acceptance (18%), distorting TPOT; see 3.2/3.5 for real-text numbers.
 
 Takeaways:
 
-- **Decode degrades gently**: at 200k context, decode keeps ~70–80% of its short-context speed. This is the hybrid architecture paying off — 48 of 64 layers are Gated DeltaNet linear attention (context-length-independent decode cost); only 16 full-attention layers grow with length.
-- **Prefill slows super-linearly**: 2× context ≈ 3× time (the quadratic term of full-attention layers shows up). Loading 100k takes ~1.4 min, 200k ~4 min — acceptable, but avoid re-ingesting the same long document repeatedly.
+- **Decode degrades gently**: at the full 256k context, decode keeps ~60–70% of its short-context speed. This is the hybrid architecture paying off — 48 of 64 layers are Gated DeltaNet linear attention (context-length-independent decode cost); only 16 full-attention layers grow with length.
+- **Prefill slows super-linearly**: 2× context ≈ 3× time (the quadratic term of full-attention layers shows up). Loading 100k takes ~1.4 min, 200k ~4 min, a maxed-out 256k ~6 min — acceptable, but avoid re-ingesting the same long document repeatedly.
+- **256K context verified for real**: the needle-in-a-haystack test (255,376 tokens, needle at 70% depth) hit on the first try — the model genuinely uses the full context, not merely "runs without crashing".
 - vLLM currently does not support prefix caching for this hybrid architecture (`enable_prefix_caching=False`). Within a session, follow-up turns only incrementally prefill new tokens (KV cache reuse); re-ingesting the same document in a *new* session costs a full prefill again.
 
 ### 3.5 MTP speculative decoding (enabled in the final config)

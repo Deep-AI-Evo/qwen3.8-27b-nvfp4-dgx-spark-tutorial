@@ -1,0 +1,4 @@
+总耗时: 352.4s | prompt_tokens: 255376 | completion: 15
+折算 prefill: 725 tok/s (含解码)
+模型回答: 8517-3342-9906
+针测试结果: ✅ 命中
