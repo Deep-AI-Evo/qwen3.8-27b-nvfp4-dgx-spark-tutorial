@@ -57,6 +57,25 @@
 
 ---
 
+## 🖥🖥 Dual-node Results (2× DGX Spark TP=2)
+
+> Full data & setup: [Dual-node Notes](docs/en/dual-node-benchmarks.md) (vLLM native mp mode + MTP×3)
+
+| Metric | Single node | 2-node TP=2 | Verdict |
+|---|---|---|---|
+| Single-stream decode (thinking) | 22.7 tok/s | 20.6–22.0 tok/s | Tie to slightly worse |
+| c=4 aggregate throughput | 44 tok/s | **65.4 tok/s (+49%)** | ✅ Clear dual-node win |
+| Full-256K concurrency | 8 | **18** | ✅ KV pool doubled |
+| Prefill 8K | ≈1900 tok/s | ≈1358 tok/s | Dual-node penalty |
+| Prefill 100K | 1230 tok/s | **1325 tok/s** | ✅ Pulls ahead |
+
+**In one line: a 27B model fits on one node — dual-node doesn't speed up a single
+stream; what it buys is concurrency throughput and KV capacity.**
+Use one node for daily interactive work; bring up the second for multi-agent fleets
+or multi-session long-document workloads.
+
+---
+
 ## 🤖 Hand This Repo to a Coding Agent (Saves Tokens)
 
 Don't copy commands by hand, and **don't let an agent explore from scratch** — this repo encodes
