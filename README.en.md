@@ -102,6 +102,7 @@ Then call the OpenAI-compatible API at `http://127.0.0.1:8000`.
 |---|---|
 | 📖 [Deployment Tutorial](docs/en/deployment-tutorial.md) | Environment setup, mirror download, flag-by-flag launch guide, API examples, 5 real pitfalls & fixes |
 | 📈 [Test Report](docs/en/test-report.md) | 7 functional tests, concurrency & long-context benchmarks, MTP comparison, daily-use recommendations |
+| 🖥🖥 [Dual-node Notes](docs/en/dual-node-benchmarks.md) | 2× DGX Spark TP=2: concurrency/capacity gains, mp-vs-Ray pitfalls, prefill/decode comparison |
 
 ## 💡 Daily-use Recommendations
 

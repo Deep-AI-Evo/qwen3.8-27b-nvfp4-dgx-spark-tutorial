@@ -99,6 +99,7 @@ PATH=~/projects/qwen38-env/bin:$PATH \
 |---|---|
 | 📖 [部署教程](docs/Qwen3.8-27B-NVFP4-部署教程.md) | 环境准备、镜像下载、启动参数详解、API 调用示例、5 个踩坑实录 |
 | 📈 [测试报告](docs/Qwen3.8-27B-NVFP4-测试报告.md) | 7 项功能测试、并发/长上下文压测、MTP 优化对比、日常使用建议 |
+| 🖥🖥 [双机部署实测](docs/Qwen3.8-27B-双机部署实测.md) | 2× DGX Spark TP=2：并发/容量收益、mp 模式与 Ray 的坑、prefill/解码对比 |
 
 ## 🔗 相关仓库
 
