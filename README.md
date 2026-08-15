@@ -100,6 +100,11 @@ PATH=~/projects/qwen38-env/bin:$PATH \
 | 📖 [部署教程](docs/Qwen3.8-27B-NVFP4-部署教程.md) | 环境准备、镜像下载、启动参数详解、API 调用示例、5 个踩坑实录 |
 | 📈 [测试报告](docs/Qwen3.8-27B-NVFP4-测试报告.md) | 7 项功能测试、并发/长上下文压测、MTP 优化对比、日常使用建议 |
 
+## 🔗 相关仓库
+
+- [RTX PRO 6000 FP8 vs NVFP4 benchmark](https://github.com/Deep-AI-Evo/qwen3.8-27b-fp8-nvfp4-rtx-pro6000-serving-benchmark) — 含 [DGX Spark / PRO 5000 / PRO 6000 三设备横向对比](https://github.com/Deep-AI-Evo/qwen3.8-27b-fp8-nvfp4-rtx-pro6000-serving-benchmark/blob/main/docs/Qwen3.8-27B-跨设备横向对比.md)
+- [RTX PRO 5000 llama.cpp Q6_K vs vLLM FP8](https://github.com/Deep-AI-Evo/qwen3.8-27b-q6k-fp8-rtx-pro5000-serving-benchmark)
+
 ## 💡 日常使用建议
 
 - **并发**：交互场景 ≤4 路（单流 ≥15 tok/s）；8 路是交互上限；批量任务用 16+ 吃满吞吐
