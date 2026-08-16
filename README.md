@@ -196,11 +196,13 @@ Agent 会按教程直接命中正确版本与命令，跳过全部试错环节�
 
 - **要 raw 速度**：PRO 6000 在 prefill/TTFT/并发上全面领先（对 DGX Spark 约 4~8 倍），其中
   FP8 无 MTP 是最省心的强基线（52.6 t/s 起步，200K 仍有 39.6 t/s）
-- **长上下文 decode 之王**：PRO 5000 的 NVFP4+MTP（n=1, marlin）57.8 t/s @148K 为三设备实测最高；
-  注意 MTP 长上下文收益因后端/n 值而反转（PRO 6000 的 n=2 配置在 200K 崩盘，关 MTP 才有 43.7 t/s），
-  用前实测自己的配置
-- 📉 **MTP 长上下文衰减的根因与跨引擎验证**（vLLM Issue #47602：单层草稿头容量不足，接受率随上下文
-  坍塌）：见 [PRO 6000 横向对比文档的 MTP 专题](https://github.com/Deep-AI-Evo/qwen3.8-27b-fp8-nvfp4-rtx-pro6000-serving-benchmark/blob/main/docs/Qwen3.8-27B-跨设备横向对比.md)
+- **长上下文 decode 最高报告值**：PRO 5000 的 NVFP4+MTP（n=1, marlin, Windows）57.8 t/s @148K；
+  但 PRO 6000（Linux）用**完全相同的软件栈**（vLLM 0.26 + marlin + n=1）复测仅 21.4 t/s——
+  n 值/后端/vLLM 版本/调度参数逐一排除、接受率全程健康，差异指向 OS/驱动层。
+  Linux 下可复现的最佳实践是关 MTP（PRO 6000 NVFP4 无 MTP 43.7 t/s @200K），用前实测自己的配置
+- 📉 **MTP 长上下文衰减的根因与跨引擎验证**：见 [PRO 6000 横向对比文档的 MTP 专题](https://github.com/Deep-AI-Evo/qwen3.8-27b-fp8-nvfp4-rtx-pro6000-serving-benchmark/blob/main/docs/Qwen3.8-27B-跨设备横向对比.md)——
+  含 vLLM Issue #47602（单层草稿头接受率坍塌）与 PRO 6000 变量排除实验
+  （接受率健康但每步开销失控，呈现不同签名）
 - **DGX Spark 的价值不在绝对速度**：128GB 统一内存跑满 256K 上下文、安静低功耗的桌面形态、
   以及双机扩展的灵活性（见[双机结论](#dual)）
 

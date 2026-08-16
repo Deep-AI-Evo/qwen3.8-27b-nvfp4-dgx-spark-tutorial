@@ -204,10 +204,12 @@ The agent hits the right versions and commands on the first pass — zero trial 
 
 - **Raw speed**: the PRO 6000 leads prefill/TTFT/concurrency across the board (~4–8× the DGX
   Spark); FP8 without MTP is the strongest no-fuss baseline (52.6 t/s short, still 39.6 t/s at 200K)
-- **Long-context decode champion**: the PRO 5000's NVFP4+MTP (n=1, marlin) at 57.8 t/s @148K
-  is the best measured across all three devices; MTP's long-context payoff flips with backend/n
-  value (the PRO 6000's n=2 setup collapses at 200K, where no-MTP gives 43.7 t/s) — measure your
-  own config before trusting MTP at long context
+- **Long-context decode, best reported**: the PRO 5000's NVFP4+MTP (n=1, marlin, Windows) at
+  57.8 t/s @148K; however, the PRO 6000 (Linux) re-tested with the **identical software stack**
+  (vLLM 0.26 + marlin + n=1) and got only 21.4 t/s — n value, GEMM backend, vLLM version and
+  scheduler params were ruled out one by one, and its acceptance rate stayed healthy (71–100%),
+  pointing to an OS/driver-level difference. On Linux the reproducible best practice is disabling
+  MTP at long context (PRO 6000 NVFP4 no-MTP: 43.7 t/s @200K) — measure your own config first
 - **The DGX Spark's value isn't raw speed**: 128GB unified memory running a full 256K context,
   a quiet low-power desktop form factor, and dual-node scalability (see [dual-node results](#dual))
 
