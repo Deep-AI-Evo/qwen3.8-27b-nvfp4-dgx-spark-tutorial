@@ -215,6 +215,7 @@ Agent 会按教程直接命中正确版本与命令，跳过全部试错环节�
 | 📖 [部署教程](docs/Qwen3.8-27B-NVFP4-部署教程.md) | 环境准备、镜像下载、启动参数详解、API 调用示例、5 个踩坑实录 |
 | 📈 [测试报告](docs/Qwen3.8-27B-NVFP4-测试报告.md) | 7 项功能测试、并发/长上下文压测、MTP 优化对比、日常使用建议 |
 | 🖥🖥 [双机部署实测](docs/Qwen3.8-27B-双机部署实测.md) | 2× DGX Spark TP=2：并发/容量收益、mp 模式与 Ray 的坑、prefill/解码对比 |
+| 🐳 [SGLang DSPARK 部署实录](docs/Qwen3.8-27B-SGLang-DSpark部署实录.md) | Docker 单命令复现官方 34–38 tok/s：digest 镜像选型、DSPARK draft 配置、mem-fraction 反优化教训、中文场景实测 |
 
 ```
 ├── README.md / README.en.md      # 中文 / English
