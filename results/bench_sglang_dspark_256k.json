@@ -1,0 +1,109 @@
+{
+  "env": "DGX Spark GB10 128GB, SGLang lmsysorg/sglang@sha256:febfb971, DSPARK (RadixArk/Qwen3.8-27B-DSpark, unquant, block-size 7), mem-fraction 0.50, chunked-prefill 8192, torch-compile",
+  "method": "随机英文散句 prompt（每档唯一 salt 防 RadixAttention 前缀缓存），非思考模式 temperature=0，流式测 TTFT 与 decode；脚本 skill/scripts/04_bench.py",
+  "date": "2026-08-17",
+  "results": [
+    {
+      "target_tokens": 1000,
+      "prompt_tokens": 1022,
+      "completion_tokens": 61,
+      "ttft_s": 0.42,
+      "prefill_tps": 2415.9,
+      "decode_tps": 20.0,
+      "total_s": 3.43
+    },
+    {
+      "target_tokens": 1000,
+      "prompt_tokens": 1022,
+      "completion_tokens": 33,
+      "ttft_s": 0.46,
+      "prefill_tps": 2223.2,
+      "decode_tps": 17.9,
+      "total_s": 2.25
+    },
+    {
+      "target_tokens": 32000,
+      "prompt_tokens": 32022,
+      "completion_tokens": 83,
+      "ttft_s": 19.29,
+      "prefill_tps": 1659.9,
+      "decode_tps": 17.7,
+      "total_s": 23.92
+    },
+    {
+      "target_tokens": 64000,
+      "prompt_tokens": 64022,
+      "completion_tokens": 75,
+      "ttft_s": 45.48,
+      "prefill_tps": 1407.7,
+      "decode_tps": 15.4,
+      "total_s": 50.27
+    },
+    {
+      "target_tokens": 150000,
+      "prompt_tokens": 78655,
+      "completion_tokens": 60,
+      "ttft_s": 60.48,
+      "prefill_tps": 1300.5,
+      "decode_tps": 17.5,
+      "total_s": 63.85,
+      "note": "系数校准轮的中间档（≈78K），如实保留"
+    },
+    {
+      "target_tokens": 100000,
+      "prompt_tokens": 100022,
+      "completion_tokens": 66,
+      "ttft_s": 85.36,
+      "prefill_tps": 1171.8,
+      "decode_tps": 16.1,
+      "total_s": 89.4
+    },
+    {
+      "target_tokens": 200000,
+      "prompt_tokens": 104852,
+      "completion_tokens": 103,
+      "ttft_s": 91.65,
+      "prefill_tps": 1144.0,
+      "decode_tps": 16.4,
+      "total_s": 97.88,
+      "note": "系数校准轮的中间档（≈104K），如实保留"
+    },
+    {
+      "target_tokens": 245000,
+      "prompt_tokens": 128550,
+      "completion_tokens": 71,
+      "ttft_s": 124.16,
+      "prefill_tps": 1035.3,
+      "decode_tps": 14.2,
+      "total_s": 129.1,
+      "note": "系数校准轮的中间档（≈128K），如实保留"
+    },
+    {
+      "target_tokens": 150000,
+      "prompt_tokens": 150022,
+      "completion_tokens": 85,
+      "ttft_s": 157.44,
+      "prefill_tps": 952.9,
+      "decode_tps": 15.6,
+      "total_s": 162.83
+    },
+    {
+      "target_tokens": 200000,
+      "prompt_tokens": 200022,
+      "completion_tokens": 92,
+      "ttft_s": 248.51,
+      "prefill_tps": 804.9,
+      "decode_tps": 13.1,
+      "total_s": 255.44
+    },
+    {
+      "target_tokens": 245000,
+      "prompt_tokens": 245022,
+      "completion_tokens": 65,
+      "ttft_s": 347.31,
+      "prefill_tps": 705.5,
+      "decode_tps": 14.0,
+      "total_s": 351.88
+    }
+  ]
+}
